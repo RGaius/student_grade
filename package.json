@@ -2,7 +2,7 @@
   "name": "student-graden",
   "productName": "student-graden",
   "version": "0.0.1",
-  "author": "bo <zhaobo1@lixin360.com>",
+  "author": "zhao.chin@foxmail.com",
   "description": "An electron-vue project",
   "license": null,
   "main": "./dist/electron/main.js",

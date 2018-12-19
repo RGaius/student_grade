@@ -12,6 +12,7 @@
   </div>
 </template>
 <script>
+const os = require('os')
 export default {
   data () {
     return {
@@ -36,7 +37,7 @@ export default {
               width: 'auto',
               border: 'none'
             }
-          }, [])
+          }, params.row.value)
         }
       }],
       tableData: [{
@@ -51,6 +52,9 @@ export default {
         date: '2016-10-01'
       }]
     }
+  },
+  created(){
+    console.log(os.homedir)
   }
 }
 </script>
