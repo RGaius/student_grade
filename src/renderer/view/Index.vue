@@ -1,14 +1,11 @@
 <style>
 .layout-index {
-  /* background: #f5f7f9; */
   position: relative;
   overflow: hidden;
 }
 .layout-header {
   width: 100%;
   height: 10px;
-  /* display: flex;
-  flex-direction: column; */
 }
 .fram-buttom {
   flex: 1;
@@ -20,23 +17,25 @@
   width: 120px;
   height: 100vh;
   overflow:auto
-  /* background-color: #2d8cf0; */
-}
-.menu {
-  /* background-color: #2d8cf0; */
 }
 .layout-content {
-  width: 100%;
+  width: 88%;
+  height: auto;
   position: fixed;
   left: 120px;
+  top: 30px;
+  overflow-y: auto;
 }
 .layout-footer {
   position: fixed;
   bottom: 0;
   left: 120px;
-  width: 100%;
-  height: 50px;
-  background-color: black;
+  width: 88%;
+  height: 30px;
+  /* background-color: black; */
+  text-align: center;
+  line-height: 30px;
+  font-size: 16px
 }
 </style>
 
@@ -61,6 +60,7 @@
     <div class="layout-content">
       <router-view></router-view>
     </div>
+    <div class="layout-footer">当前文件</div>
   </div>
 </template>
 <script>

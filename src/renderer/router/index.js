@@ -10,7 +10,7 @@ export default new Router({
     component: require('@/view/Index').default,
     children: [{
       path: '/',
-      component: require('@/view/EntryGraden').default
+      component: require('@/view/EntryGrade').default
     }, {
       path: 'setting',
       component: require('@/view/Setting').default

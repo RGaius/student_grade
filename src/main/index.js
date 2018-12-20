@@ -1,4 +1,5 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow,dialog,ipcMain } from 'electron'
+import {init} from '../renderer/utils/DataStore'
 
 /**
  * Set `__static` path to static files in production
@@ -14,11 +15,12 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html`
 
 function createWindow () {
+  init()
   /**
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 563,
+    height: 700,
     useContentSize: true,
     width: 1000
   })
@@ -43,3 +45,28 @@ app.on('activate', () => {
     createWindow()
   }
 })
+// 打开文件夹
+ipcMain.on('sync-openFile-dialog', (event, arg) => {
+  dialog.showOpenDialog({
+    title: '请选择Excel文件',
+    filters: [{ name: 'Excel File', extensions: ['xls', 'xlsx'] }],
+    properties: ['openFile']
+  }, function (arr) {
+    console.log(arr)
+    if (typeof arr !== 'undefined') {
+      // arr 是一个文件路径 数组
+      console.log("event", event)
+      // 正常触发
+      if (event) {
+        event.sender.send('open-file-response', arr[0])
+      } else {
+        // 通过 emit 触发（如快捷键）
+        const mainWindow = BrowserWindow.fromId(1)
+        if (mainWindow) {
+          mainWindow.webContents.send('open-file-response', arr[0])
+        }
+      }
+    }
+  })
+})
+
