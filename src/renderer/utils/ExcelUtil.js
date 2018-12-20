@@ -22,7 +22,7 @@ export async function readExcelFile(filePath){
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     const tableData = XLSX.utils.sheet_to_json(worksheet)
-    await insertDocument(os.homedir + '\\.StudentGrade' + '\\studentInfo.db', tableData).then(function (res){
+    await insertDocument(os.homedir + '/.StudentGrade' + '/studentInfo.db', tableData).then(function (res){
         readSuccess =  res
     })
     return readSuccess

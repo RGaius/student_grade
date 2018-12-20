@@ -7,8 +7,9 @@ import fs from 'fs'
  */
 export function init() {
     const homedir = os.homedir();
-    const appDir = homedir + '\\.StudentGrade'
+    const appDir = homedir + '/.StudentGrade'
     fs.access(appDir, (err) => {
+    console.log(err)
         if (err) {
             fs.mkdir(appDir, (err) => {})
         }

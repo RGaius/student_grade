@@ -19,7 +19,7 @@
         <Button type="info" shape="circle" @click="getFile">打开文件</Button>
       </FormItem>
       <FormItem label>
-        <Button type="success" shape="circle">导出文件</Button>
+        <Button type="success" shape="circle" @click="exportFile">导出文件</Button>
       </FormItem>
     </Form>
     <Table stripe border :columns="columns" :data="tableData"></Table>
@@ -108,14 +108,28 @@ export default {
     getFile(e) {
       ipcRenderer.send("sync-openFile-dialog");
     },
+    exportFile(){
+        ipcRenderer.send("sync-saveFile-dialog");
+    },
     listenerNumber() {
       if (this.formItem.number.length == 13) {
         const _this = this;
-        findDocument(os.homedir + "\\.StudentGrade" + "\\studentInfo.db", {
+        _this.tableData = []
+        findDocument(os.homedir + "/.StudentGrade" + "/studentInfo.db", {
           学号: this.formItem.number
         }).then(function(res) {
-          _this.tableData.push(...res);
-        });
+            if (res.length == 0) {
+                _this.$Notice.warning({
+                    title: "未找到对应信息"
+                });
+            } else {
+                _this.tableData.push(...res);
+            }
+        }).catch(function(err){
+            _this.$Notice.error({
+                title: err
+            });
+        })
       }
     }
   }

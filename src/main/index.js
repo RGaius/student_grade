@@ -69,4 +69,11 @@ ipcMain.on('sync-openFile-dialog', (event, arg) => {
     }
   })
 })
+ipcMain.on('sync-saveFile-dialog',(event,arg) => {
+  dialog.showSaveDialog({
+    title: '请选择目标文件夹'
+  },function (filename){
+      console.log(filename)
+  })
+})
 
