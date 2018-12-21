@@ -32,6 +32,7 @@
 import { ipcRenderer } from "electron";
 import { isExcelFile, readExcelFile } from "../utils/ExcelUtil";
 import { findDocument } from "../utils/DataStore";
+import * as Constants from '../constants/Application'
 
 import os from "os";
 
@@ -115,7 +116,7 @@ export default {
       if (this.formItem.number.length == 13) {
         const _this = this;
         _this.tableData = []
-        findDocument(os.homedir + "/.StudentGrade" + "/studentInfo.db", {
+        findDocument(os.homedir + Constants.separator + Constants.appDir + Constants.separator + "studentInfo.db", {
           学号: this.formItem.number
         }).then(function(res) {
             if (res.length == 0) {

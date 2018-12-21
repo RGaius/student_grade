@@ -1,13 +1,14 @@
 import Nedb from 'nedb'
 import os from 'os'
 import fs from 'fs'
+import * as Constants from '../constants/Application'
 
 /**
  * 应用初始化，创建应用数据目录
  */
 export function init() {
     const homedir = os.homedir();
-    const appDir = homedir + '/.StudentGrade'
+    const appDir = homedir + Constants.separator + Constants.appDir
     fs.access(appDir, (err) => {
     console.log(err)
         if (err) {
