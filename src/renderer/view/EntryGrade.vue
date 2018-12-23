@@ -15,25 +15,22 @@
       <FormItem label="姓名">
         <Input v-model="formItem.name" readonly></Input>
       </FormItem>
-      <FormItem label>
+      <!-- <FormItem label>
         <Button type="info" shape="circle" @click="getFile">打开文件</Button>
-      </FormItem>
+      </FormItem> -->
       <FormItem label>
         <Button type="success" shape="circle" @click="exportFile">导出文件</Button>
       </FormItem>
     </Form>
     <Table stripe border :columns="columns" :data="tableData"></Table>
     <div class="save-button">
-      <Button type="primary" shape="circle">确认数据</Button>
+      <Button type="primary" shape="circle" @click="toInit">确认数据</Button>
     </div>
   </div>
 </template>
 <script>
-import { ipcRenderer } from "electron";
-import { isExcelFile, readExcelFile } from "../utils/ExcelUtil";
-import { findDocument } from "../utils/DataStore";
+import { findDocument } from "../utils/DataStore"
 import * as Constants from '../constants/Application'
-
 import os from "os";
 
 export default {
@@ -80,37 +77,14 @@ export default {
     };
   },
   created() {
-    ipcRenderer.on("open-file-response", (event, path) => {
-      if (isExcelFile(path)) {
-        this.$Spin.show({
-          render: h => {
-            return h("span", {}, "数据加载中，请稍后...");
-          }
-        });
-        const result = readExcelFile(path);
-        this.$Spin.hide();
-        if (result) {
-          this.$Notice.success({
-            title: "文件读取成功！"
-          });
-        } else {
-          this.$Notice.error({
-            title: "文件读取失败！"
-          });
-        }
-      } else {
-        this.$Notice.warning({
-          title: "文件格式有误"
-        });
-      }
-    });
+    
   },
   methods: {
-    getFile(e) {
-      ipcRenderer.send("sync-openFile-dialog");
-    },
     exportFile(){
         ipcRenderer.send("sync-saveFile-dialog");
+    },
+    toInit(){
+        this.$router.push({path:'/'})
     },
     listenerNumber() {
       if (this.formItem.number.length == 13) {

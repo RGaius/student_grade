@@ -10,9 +10,10 @@ export function init() {
     const homedir = os.homedir();
     const appDir = homedir + Constants.separator + Constants.appDir
     fs.access(appDir, (err) => {
-    console.log(err)
         if (err) {
-            fs.mkdir(appDir, (err) => {})
+            fs.mkdir(appDir, (err) => {
+                console.log(err)
+            })
         }
     })
 }
