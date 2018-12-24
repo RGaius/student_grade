@@ -43,8 +43,8 @@ export async function readExcelFile(_this,filePath) {
             headerObject.key = headKey
             headerList.push(headerObject)
             for(let row = startRow + 1; row <= endRow; row++){
-                if (i == startColumn) {
-                    const newColumn = getCharCol(i) + (endColumn+1);
+                if (i == endColumn) {
+                    const newColumn = `${getCharCol(i+1)}${row}`;
                     console.log(newColumn)
                     worksheetData[newColumn] = {t:'n',v:row,w:'index'}
                 }

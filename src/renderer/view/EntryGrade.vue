@@ -15,14 +15,11 @@
       <FormItem label="姓名">
         <Input v-model="formItem.name" readonly></Input>
       </FormItem>
-      <!-- <FormItem label>
-        <Button type="info" shape="circle" @click="getFile">打开文件</Button>
-      </FormItem> -->
       <FormItem label>
         <Button type="success" shape="circle" @click="exportFile">导出文件</Button>
       </FormItem>
     </Form>
-    <Table stripe border :columns="columns" :data="tableData" :loading="loading"></Table>
+    <Table stripe border :columns="columns" :data="tableData" :loading="loading" height="540"></Table>
     <div class="save-button">
       <Button type="primary" shape="circle" @click="toInit">确认数据</Button>
     </div>
@@ -30,7 +27,8 @@
 </template>
 <script>
 import * as Constants from '../constants/Application'
-import os from "os";
+import os from "os"
+import { ipcRenderer } from "electron"
 
 export default {
   data() {
@@ -85,6 +83,9 @@ export default {
     },
     toInit(){
         this.$router.push({path:'/'})
+    },
+    updateTable(){
+
     },
     listenerNumber() {
       if (this.formItem.number.length == 13) {

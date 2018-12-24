@@ -24,35 +24,37 @@
   position: fixed;
   left: 120px;
   /* top: 30px; */
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
 }
 .layout-footer {
   position: fixed;
   bottom: 0;
   left: 120px;
   width: 88%;
-  height: 30px;
+  height: 40px;
+  font-weight: bold;
   /* background-color: black; */
   text-align: center;
   line-height: 30px;
-  font-size: 16px
+  font-size: 14px;
+  color: #464c5b
 }
 </style>
 
 <template>
   <div class="layout-index">
     <div class="layout-sider">
-      <Menu style="width:100%;height:100vh" :theme="theme" active-name="1">
-        <MenuItem name="1">
+      <Menu style="width:100%;height:100vh" :theme="theme" active-name="index" @on-select="toPage">
+        <MenuItem name="/grade">
           <i class="iconfont icon-79"></i>首页
         </MenuItem>
-        <MenuItem name="2">
+        <MenuItem name="/data">
           <i class="iconfont icon-table"></i>数据
         </MenuItem>
-        <MenuItem name="3">
+        <MenuItem name="/setting">
           <i class="iconfont icon-setting"></i>设置
         </MenuItem>
-        <MenuItem name="4">
+        <MenuItem name="/help">
           <i class="iconfont icon-help"></i>帮助
         </MenuItem>
       </Menu>
@@ -60,18 +62,27 @@
     <div class="layout-content">
       <router-view></router-view>
     </div>
-    <div class="layout-footer">当前文件</div>
+    <div class="layout-footer">当前文件:{{currentFile}}.xlsx</div>
   </div>
 </template>
 <script>
+import pathModule from 'path'
+
 export default {
   data() {
     return {
-      theme: "dark"
+      theme: "dark",
+      currentFile:''
     }
   },
   created(){
-    
+    this.currentFile = pathModule.parse(localStorage.getItem('currentTable')).name
+  },
+  methods:{
+      toPage(name){
+          console.log(name)
+        this.$router.push({path:name})
+      }     
   }
 }
 </script>

@@ -14,9 +14,18 @@ export default new Router({
         children: [{
             path: '/',
             component: require('@/view/EntryGrade').default
-        }, {
-            path: 'setting',
+        },{
+            path: '/grade',
+            component: require('@/view/EntryGrade').default
+        },{
+            path: '/data',
+            component: require('@/view/EntryGrade').default
+        },{
+            path: '/setting',
             component: require('@/view/Setting').default
+        },{
+            path: '/help',
+            component: require('@/view/EntryGrade').default
         }]
     }]
 })
