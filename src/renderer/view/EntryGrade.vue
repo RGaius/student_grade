@@ -22,20 +22,20 @@
         <Button type="success" shape="circle" @click="exportFile">导出文件</Button>
       </FormItem>
     </Form>
-    <Table stripe border :columns="columns" :data="tableData"></Table>
+    <Table stripe border :columns="columns" :data="tableData" :loading="loading"></Table>
     <div class="save-button">
       <Button type="primary" shape="circle" @click="toInit">确认数据</Button>
     </div>
   </div>
 </template>
 <script>
-import { findDocument } from "../utils/DataStore"
 import * as Constants from '../constants/Application'
 import os from "os";
 
 export default {
   data() {
     return {
+      loading:false,
       formItem: {
         number: "",
         name: ""
@@ -48,11 +48,11 @@ export default {
         },
         {
           title: "项目名称",
-          key: "项目"
+          key: "xm"
         },
         {
           title: "分数",
-          key: "分数",
+          key: "fs",
           render: (h, params) => {
             const _this = this;
             return h(
@@ -60,11 +60,11 @@ export default {
               {
                 props: {
                   type: "text",
-                  value: _this.tableData[params.index].age
+                  value: _this.tableData[params.index].fs
                 },
                 on: {
                   "on-change": event => {
-                    this.data[params.index].age = event.data;
+                    this.data[params.index].fs = event.data;
                   }
                 },
                 size: "large"
@@ -89,18 +89,22 @@ export default {
     listenerNumber() {
       if (this.formItem.number.length == 13) {
         const _this = this;
+        this.loading =true
         _this.tableData = []
-        findDocument(os.homedir + Constants.separator + Constants.appDir + Constants.separator + "studentInfo.db", {
-          学号: this.formItem.number
+        _this.$db.findDocument(localStorage.getItem('currentTable'), {
+          xh: this.formItem.number
         }).then(function(res) {
+          _this.loading = false
             if (res.length == 0) {
                 _this.$Notice.warning({
                     title: "未找到对应信息"
                 });
             } else {
+              _this.formItem.name = res[0].xm
                 _this.tableData.push(...res);
             }
         }).catch(function(err){
+          _this.loading = false
             _this.$Notice.error({
                 title: err
             });

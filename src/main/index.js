@@ -1,5 +1,5 @@
 import { app, BrowserWindow,dialog,ipcMain } from 'electron'
-import {init} from '../renderer/utils/DataStore'
+import DataStore from '../renderer/utils/DataStore'
 
 /**
  * Set `__static` path to static files in production
@@ -15,7 +15,7 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html`
 
 function createWindow () {
-  init()
+  new DataStore().init()
   /**
    * Initial window options
    */
@@ -59,13 +59,7 @@ ipcMain.on('sync-openFile-dialog', (event, arg) => {
       // 正常触发
       if (event) {
         event.sender.send('open-file-response', arr[0])
-      } else {
-        // 通过 emit 触发（如快捷键）
-        const mainWindow = BrowserWindow.fromId(1)
-        if (mainWindow) {
-          mainWindow.webContents.send('open-file-response', arr[0])
-        }
-      }
+      } 
     }
   })
 })

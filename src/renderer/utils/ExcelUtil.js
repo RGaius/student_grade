@@ -1,7 +1,6 @@
 import pathModule from 'path'
 import XLSX from 'xlsx'
 import os from 'os'
-import {insertDocument} from './DataStore'
 import * as Constants from '../constants/Application'
 import pinyin from 'pinyin4js'
 import { PinyinHelper } from 'pinyin4js/lib/PinyinHelper';
@@ -19,13 +18,13 @@ export function isExcelFile(path) {
  * 读取文件
  * @param {string} filePath 文件路径 
  */
-export async function readExcelFile(filePath) {
+export async function readExcelFile(_this,filePath) {
     let readSuccess = false
     try {
         const workbook = XLSX.readFile(filePath)
         const sheetName = workbook.SheetNames[0];
         const worksheetData = workbook.Sheets[sheetName];
-        console.log(worksheetData)
+        console.log(typeof worksheetData)
         // 获取表头
         const scope = worksheetData['!ref'].split(':') // A1 F5
         const startColumn = getNumCol(extractLetters(scope[0])) // Excel 是从 1 开始
@@ -44,15 +43,22 @@ export async function readExcelFile(filePath) {
             headerObject.key = headKey
             headerList.push(headerObject)
             for(let row = startRow + 1; row <= endRow; row++){
+                if (i == startColumn) {
+                    const newColumn = getCharCol(i) + (endColumn+1);
+                    console.log(newColumn)
+                    worksheetData[newColumn] = {t:'n',v:row,w:'index'}
+                }
                 const rowKey = `${getCharCol(i)}${row}`;
                 if (typeof worksheetData[rowKey] === 'undefined'){
                     worksheetData[rowKey] = {t:'s',v:'',w:''}
                 }
             }
         }
-        console.log(headerList)
+        console.log(worksheetData)
         const tableData = XLSX.utils.sheet_to_json(worksheetData)
-        await insertDocument(os.homedir + Constants.separator + Constants.appDir + Constants.separator + 'studentInfo.db', tableData).then(function (res) {
+        const currentFilePath = os.homedir + Constants.separator + Constants.appDir + Constants.separator + pathModule.parse(filePath).name
+        localStorage.setItem('currentTable', currentFilePath)
+        await _this.$db.insertDocument(currentFilePath, tableData).then(function (res) {
             readSuccess = res
         })
     } catch (error) {
@@ -69,6 +75,8 @@ export async function readExcelFile(filePath) {
 export function handleJson(jsonData) {
     for (const item of jsonData) {
         delete item._id
+        delete item.createdAt
+        delete item.updatedAt
     }
     return jsonData
 }

@@ -24,7 +24,7 @@
   position: fixed;
   left: 120px;
   /* top: 30px; */
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 .layout-footer {
   position: fixed;
@@ -53,7 +53,7 @@
           <i class="iconfont icon-setting"></i>设置
         </MenuItem>
         <MenuItem name="4">
-          <i class="iconfont icon-custom-help"></i>帮助
+          <i class="iconfont icon-help"></i>帮助
         </MenuItem>
       </Menu>
     </div>
@@ -68,7 +68,10 @@ export default {
   data() {
     return {
       theme: "dark"
-    };
+    }
+  },
+  created(){
+    
   }
-};
+}
 </script>
