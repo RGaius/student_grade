@@ -33,7 +33,6 @@
   width: 88%;
   height: 40px;
   font-weight: bold;
-  /* background-color: black; */
   text-align: center;
   line-height: 30px;
   font-size: 14px;
@@ -44,7 +43,7 @@
 <template>
   <div class="layout-index">
     <div class="layout-sider">
-      <Menu style="width:100%;height:100vh" :theme="theme" active-name="index" @on-select="toPage">
+      <Menu style="width:100%;height:100vh" :theme="theme" active-name="/grade" @on-select="toPage">
         <MenuItem name="/grade">
           <i class="iconfont icon-79"></i>首页
         </MenuItem>
@@ -62,21 +61,18 @@
     <div class="layout-content">
       <router-view></router-view>
     </div>
-    <div class="layout-footer">当前文件:{{currentFile}}.xlsx</div>
   </div>
 </template>
 <script>
-import pathModule from 'path'
+
 
 export default {
   data() {
     return {
-      theme: "dark",
-      currentFile:''
+      theme: "dark"
     }
   },
   created(){
-    this.currentFile = pathModule.parse(localStorage.getItem('currentTable')).name
   },
   methods:{
       toPage(name){

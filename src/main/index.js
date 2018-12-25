@@ -1,5 +1,6 @@
 import { app, BrowserWindow,dialog,ipcMain } from 'electron'
 import DataStore from '../renderer/utils/DataStore'
+import pathModule from 'path'
 
 /**
  * Set `__static` path to static files in production
@@ -49,14 +50,11 @@ app.on('activate', () => {
 ipcMain.on('sync-openFile-dialog', (event, arg) => {
   dialog.showOpenDialog({
     title: '请选择Excel文件',
-    filters: [{ name: 'Excel File', extensions: ['xls', 'xlsx'] }],
+    filters: [{ name: 'Excel File', extensions: ['xlsx'] }],
     properties: ['openFile']
   }, function (arr) {
     console.log(arr)
     if (typeof arr !== 'undefined') {
-      // arr 是一个文件路径 数组
-      console.log("event", event)
-      // 正常触发
       if (event) {
         event.sender.send('open-file-response', arr[0])
       } 
@@ -65,9 +63,12 @@ ipcMain.on('sync-openFile-dialog', (event, arg) => {
 })
 ipcMain.on('sync-saveFile-dialog',(event,arg) => {
   dialog.showSaveDialog({
-    title: '请选择目标文件夹'
+    title: '请选择目标文件夹',
+    defaultPath: pathModule.parse(arg[0]).base + '.xlsx'
   },function (filename){
-      console.log(filename)
+    if (event) {
+        event.sender.send('save-file-response', filename)
+    } 
   })
 })
 

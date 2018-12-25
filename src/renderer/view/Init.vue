@@ -2,7 +2,7 @@
   <div class="init-layout">
     <Button type="success" shape="circle" long @click="importFile">打开新文件</Button>
     <Button type="primary" shape="circle" long @click="showHistoryFiles">打开历史文件</Button>
-    <Drawer title="历史文件列表" placement="left" v-model="show" scrollable=true>
+    <Drawer title="历史文件列表" placement="left" v-model="show" scrollable>
       <Menu active-name="1" @on-select="openHistoryFile">
         <MenuItem v-for="(file,index) of fileList" :name="file" :key="index">
           <i class="iconfont icon-excel"></i>{{file}}

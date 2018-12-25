@@ -26,7 +26,7 @@ export default class DataStore {
      * @param {string} table 
      */
     getDbInstance(table) {
-        let db  = this.instancePool.get(table);
+        let db = this.instancePool.get(table);
         if (db === undefined) {
             db = new Nedb({
                 filename: table,
@@ -67,7 +67,23 @@ export default class DataStore {
         const _this = this
         return new Promise(function (resolve, reject) {
             const db = _this.getDbInstance(table)
-            db.find(params).sort({createdAt: 1}).exec(function (err, doc) {
+            db.find(params).sort({
+                index: 1
+            }).exec(function (err, doc) {
+                if (err !== null) {
+                    reject(err)
+                } else {
+                    resolve(doc)
+                }
+            })
+        })
+    }
+
+    updateDocument(table, query, document) {
+        const _this = this
+        return new Promise(function (resolve, reject) {
+            const db = _this.getDbInstance(table)
+            db.update(query, {$set: document}, {}, function (err, doc) {
                 if (err !== null) {
                     reject(err)
                 } else {

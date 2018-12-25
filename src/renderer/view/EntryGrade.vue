@@ -1,8 +1,20 @@
 <style>
 .save-button {
   position: fixed;
+  width: 88%;
+  display: flex;
   bottom: 40px;
-  right: 30px;
+  left:120px;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.currentFile{
+  height: 32px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 32px;
+  font-size: 14px;
+  color: #464c5b
 }
 </style>
 
@@ -10,34 +22,37 @@
   <div class="grade-layout">
     <Form :model="formItem" :label-width="80" :inline="true">
       <FormItem label="学号">
-        <Input v-model="formItem.number" @on-change="listenerNumber()" placeholder="请输入学生学号"></Input>
+        <Input v-model="formItem.number" id="number" autofocus @on-change="listenerNumber()" @on-enter="listenerNumber()" placeholder="请输入学生学号"></Input>
       </FormItem>
       <FormItem label="姓名">
         <Input v-model="formItem.name" readonly></Input>
       </FormItem>
-      <FormItem label>
-        <Button type="success" shape="circle" @click="exportFile">导出文件</Button>
-      </FormItem>
     </Form>
     <Table stripe border :columns="columns" :data="tableData" :loading="loading" height="540"></Table>
     <div class="save-button">
-      <Button type="primary" shape="circle" @click="toInit">确认数据</Button>
+      <Button type="success" shape="circle" @click="exportFile">导出文件</Button>
+      <div class="currentFile">当前文件:{{currentFile}}.xlsx</div>
+      <Button type="primary" shape="circle" @click="updateTable">确认数据</Button>
     </div>
   </div>
 </template>
 <script>
 import * as Constants from '../constants/Application'
-import os from "os"
-import { ipcRenderer } from "electron"
+import os from 'os'
+import pathModule from 'path'
+import { ipcRenderer } from 'electron'
+import { saveExcelFile} from '../utils/ExcelUtil'
 
 export default {
   data() {
     return {
       loading:false,
+      currentFile:'',
       formItem: {
         number: "",
         name: ""
       },
+      updateList:[],
       columns: [
         {
           type: "index",
@@ -50,19 +65,21 @@ export default {
         },
         {
           title: "分数",
-          key: "fs",
+          key: "cj",
           render: (h, params) => {
-            const _this = this;
             return h(
               "Input",
               {
                 props: {
                   type: "text",
-                  value: _this.tableData[params.index].fs
+                  value: this.tableData[params.index].cj
                 },
                 on: {
-                  "on-change": event => {
-                    this.data[params.index].fs = event.data;
+                  "on-blur": event => {
+                    let target = []
+                    target.push({_id:params.row._id})
+                    target.push({cj: parseInt(event.currentTarget.value)})
+                    this.updateList.push(target)
                   }
                 },
                 size: "large"
@@ -75,17 +92,39 @@ export default {
     };
   },
   created() {
-    
+    this.currentFile = pathModule.parse(localStorage.getItem('currentTable')).name
+    const _this = this
+    ipcRenderer.once("save-file-response",(event,savePath) => {
+      if (event) {
+        saveExcelFile(_this, savePath)
+      }
+    })
   },
   methods: {
     exportFile(){
-        ipcRenderer.send("sync-saveFile-dialog");
+        ipcRenderer.send("sync-saveFile-dialog",[localStorage.getItem('currentTable')]);
     },
     toInit(){
         this.$router.push({path:'/'})
     },
     updateTable(){
-
+      if(this.updateList.length > 0) {
+          const table = localStorage.getItem('currentTable')
+          for (let item of this.updateList) {
+              this.$db.updateDocument(table,item[0],item[1])
+          }
+          this.$Notice.success({
+              title: "更新成功"
+          });
+          this.tableData = []
+          this.formItem.number = ''
+          this.formItem.name = ''
+          document.getElementById('number').lastElementChild.focus()
+      } else {
+        this.$Notice.info({
+              title: "请修改数据后再做更新"
+          });
+      }  
     },
     listenerNumber() {
       if (this.formItem.number.length == 13) {

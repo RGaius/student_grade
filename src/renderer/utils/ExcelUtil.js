@@ -3,7 +3,10 @@ import XLSX from 'xlsx'
 import os from 'os'
 import * as Constants from '../constants/Application'
 import pinyin from 'pinyin4js'
-import { PinyinHelper } from 'pinyin4js/lib/PinyinHelper';
+import {
+    PinyinHelper
+} from 'pinyin4js/lib/PinyinHelper'
+import DataStore from './DataStore'
 
 /**
  * 判断文件是否是excel文件
@@ -11,27 +14,26 @@ import { PinyinHelper } from 'pinyin4js/lib/PinyinHelper';
  */
 export function isExcelFile(path) {
     const extname = pathModule.extname(path)
-    const regexp = /^.xls(x)?$/
+    const regexp = /^.xlsx$/
     return regexp.test(extname)
 }
 /**
  * 读取文件
  * @param {string} filePath 文件路径 
  */
-export async function readExcelFile(_this,filePath) {
+export async function readExcelFile(_this, filePath) {
     let readSuccess = false
     try {
         const workbook = XLSX.readFile(filePath)
-        const sheetName = workbook.SheetNames[0];
-        const worksheetData = workbook.Sheets[sheetName];
-        console.log(typeof worksheetData)
+        const sheetName = workbook.SheetNames[0]
+        const worksheetData = workbook.Sheets[sheetName]
         // 获取表头
         const scope = worksheetData['!ref'].split(':') // A1 F5
         const startColumn = getNumCol(extractLetters(scope[0])) // Excel 是从 1 开始
         const endColumn = getNumCol(extractLetters(scope[1]))
         const startRow = parseInt(extractNumber(scope[0]))
         const endRow = parseInt(extractNumber(scope[1]))
-        let headerList =[]
+        let headerList = []
         for (let i = startColumn, emptyColumn = 0; i <= endColumn; i++) {
             const curColKey = typeof worksheetData[`${getCharCol(i)}${startRow}`] === 'undefined' ? `表头空${emptyColumn++}` : worksheetData[`${getCharCol(i)}${startRow}`].v
             const headKey = PinyinHelper.getShortPinyin(curColKey)
@@ -42,19 +44,42 @@ export async function readExcelFile(_this,filePath) {
             headerObject.title = curColKey
             headerObject.key = headKey
             headerList.push(headerObject)
-            for(let row = startRow + 1; row <= endRow; row++){
+            for (let row = startRow + 1; row <= endRow; row++) {
                 if (i == endColumn) {
-                    const newColumn = `${getCharCol(i+1)}${row}`;
-                    console.log(newColumn)
-                    worksheetData[newColumn] = {t:'n',v:row,w:'index'}
+                    let newColumn
+                    if (row == (startRow + 1)) {
+                        newColumn = `${getCharCol(i+1)}${startRow}`
+                        worksheetData[newColumn] = {
+                            t: 's',
+                            v: 'index',
+                            w: 'index'
+                        }
+                        newColumn = `${getCharCol(i+1)}${row}`
+                        worksheetData[newColumn] = {
+                            t: 's',
+                            v: row,
+                            w: row
+                        }
+                    } else {
+                        newColumn = `${getCharCol(i+1)}${row}`
+                        worksheetData[newColumn] = {
+                            t: 'n',
+                            v: row,
+                            w: row
+                        }
+                    }
                 }
-                const rowKey = `${getCharCol(i)}${row}`;
-                if (typeof worksheetData[rowKey] === 'undefined'){
-                    worksheetData[rowKey] = {t:'s',v:'',w:''}
+                const rowKey = `${getCharCol(startColumn)}${startRow}`
+                if (typeof worksheetData[rowKey] === 'undefined') {
+                    worksheetData[rowKey] = {
+                        t: 's',
+                        v: '',
+                        w: ''
+                    }
                 }
             }
         }
-        console.log(worksheetData)
+        worksheetData['!ref'] = `${getCharCol(startColumn)}${startRow}:${getCharCol(endColumn+1)}${endRow}`
         const tableData = XLSX.utils.sheet_to_json(worksheetData)
         const currentFilePath = os.homedir + Constants.separator + Constants.appDir + Constants.separator + pathModule.parse(filePath).name
         localStorage.setItem('currentTable', currentFilePath)
@@ -67,7 +92,19 @@ export async function readExcelFile(_this,filePath) {
     }
     return readSuccess
 }
-
+export function saveExcelFile(_this, targetPath) {
+    _this.$db.findDocument(localStorage.getItem('currentTable'), {}).then(result => {
+        const sheetData = XLSX.utils.json_to_sheet(handleJson(result))
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, sheetData, "Sheet1");
+        XLSX.writeFile(wb, targetPath);
+    }).catch(err => {
+        _this.$Notice.error({
+            title: '文件导出异常',
+            desc: err
+        });
+    })
+}
 /**
  * 删除从nedb中查询出来的数据中的_id
  * @param {array} jsonData 
@@ -77,6 +114,7 @@ export function handleJson(jsonData) {
         delete item._id
         delete item.createdAt
         delete item.updatedAt
+        delete item.index
     }
     return jsonData
 }
@@ -87,8 +125,8 @@ function extractLetters(str) {
 }
 
 // 提取数字
-function extractNumber(str){
-    return str.replace(/[^0-9]/ig,'');
+function extractNumber(str) {
+    return str.replace(/[^0-9]/ig, '');
 }
 
 function getCharCol(n) {
