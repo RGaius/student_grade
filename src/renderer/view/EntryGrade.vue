@@ -3,7 +3,7 @@
   position: fixed;
   width: 88%;
   display: flex;
-  bottom: 40px;
+  bottom: 10px;
   left:120px;
   flex-direction: row;
   justify-content: space-around;

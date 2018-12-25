@@ -20,23 +20,10 @@
 }
 .layout-content {
   width: 88%;
-  height: auto;
   position: fixed;
   left: 120px;
-  /* top: 30px; */
-  /* overflow-y: scroll; */
-}
-.layout-footer {
-  position: fixed;
-  bottom: 0;
-  left: 120px;
-  width: 88%;
-  height: 40px;
-  font-weight: bold;
-  text-align: center;
-  line-height: 30px;
-  font-size: 14px;
-  color: #464c5b
+  top: 30px;
+  overflow-y: auto;
 }
 </style>
 

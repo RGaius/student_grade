@@ -6,7 +6,6 @@ import pinyin from 'pinyin4js'
 import {
     PinyinHelper
 } from 'pinyin4js/lib/PinyinHelper'
-import DataStore from './DataStore'
 
 /**
  * 判断文件是否是excel文件
