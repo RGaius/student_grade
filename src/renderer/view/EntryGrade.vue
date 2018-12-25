@@ -72,14 +72,21 @@ export default {
               {
                 props: {
                   type: "text",
-                  value: this.tableData[params.index].cj
+                  value: this.tableData[params.index].cj,
+                  number
                 },
                 on: {
                   "on-blur": event => {
-                    let target = []
-                    target.push({_id:params.row._id})
-                    target.push({cj: parseInt(event.currentTarget.value)})
-                    this.updateList.push(target)
+                    const rsg = /^[1-9]\d(.5)?|100$/
+                    const data = event.currentTarget.value
+                    if(rsg.test(data)) {
+                        let target = []
+                        target.push({_id:params.row._id})
+                        target.push({cj: parseInt(data)})
+                        this.updateList.push(target)
+                    } else{
+                        this.$Message.warning('该分数格式有误！'); 
+                    }
                   }
                 },
                 size: "large"

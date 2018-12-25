@@ -34,9 +34,9 @@
         <MenuItem name="/grade">
           <i class="iconfont icon-79"></i>首页
         </MenuItem>
-        <MenuItem name="/data">
+        <!-- <MenuItem name="/data">
           <i class="iconfont icon-table"></i>数据
-        </MenuItem>
+        </MenuItem> -->
         <MenuItem name="/setting">
           <i class="iconfont icon-setting"></i>设置
         </MenuItem>
