@@ -79,7 +79,8 @@ export default {
                   "on-blur": event => {
                     const rsg = /^[1-9]\d(.5)?|100$/
                     const data = event.currentTarget.value
-                    if(rsg.test(data)) {
+                    console.log(data == '')
+                    if(rsg.test(data) || data == '') {
                         let target = []
                         target.push({_id:params.row._id})
                         target.push({sycj: parseInt(data)})
