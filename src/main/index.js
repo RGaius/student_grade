@@ -1,4 +1,9 @@
-import { app, BrowserWindow,dialog,ipcMain } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain
+} from 'electron'
 import DataStore from '../renderer/utils/DataStore'
 import pathModule from 'path'
 
@@ -11,21 +16,20 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 let mainWindow
-const winURL = process.env.NODE_ENV === 'development'
-  ? `http://localhost:9080`
-  : `file://${__dirname}/index.html`
+const winURL = process.env.NODE_ENV === 'development' ?
+  `http://localhost:9080` :
+  `file://${__dirname}/index.html`
 
-function createWindow () {
+function createWindow() {
   new DataStore().init()
   /**
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 700,
+    height: 500,
     useContentSize: true,
-    width: 1070
+    width: 770
   })
-
   mainWindow.loadURL(winURL)
 
   mainWindow.on('closed', () => {
@@ -50,25 +54,32 @@ app.on('activate', () => {
 ipcMain.on('sync-openFile-dialog', (event, arg) => {
   dialog.showOpenDialog({
     title: '请选择Excel文件',
-    filters: [{ name: 'Excel File', extensions: ['xlsx'] }],
+    filters: [{
+      name: 'Excel File',
+      extensions: ['xlsx']
+    }],
     properties: ['openFile']
   }, function (arr) {
     console.log(arr)
     if (typeof arr !== 'undefined') {
       if (event) {
         event.sender.send('open-file-response', arr[0])
-      } 
+      }
     }
   })
 })
-ipcMain.on('sync-saveFile-dialog',(event,arg) => {
+
+ipcMain.on('sync-saveFile-dialog', (event, arg) => {
   dialog.showSaveDialog({
     title: '请选择目标文件夹',
     defaultPath: pathModule.parse(arg[0]).base + '.xlsx'
-  },function (filename){
+  }, function (filename) {
     if (event) {
-        event.sender.send('save-file-response', filename)
-    } 
+      event.sender.send('save-file-response', filename)
+    }
   })
 })
 
+ipcMain.on('resize-window', () => {
+  mainWindow.setSize(1070, 740)
+})

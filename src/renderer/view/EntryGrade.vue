@@ -61,19 +61,19 @@ export default {
         },
         {
           title: "项目名称",
-          key: "xm"
+          key: "xmmc"
         },
         {
-          title: "分数",
-          key: "cj",
+          title: "实验成绩",
+          key: "sycj",
           render: (h, params) => {
             return h(
               "Input",
               {
                 props: {
                   type: "text",
-                  value: this.tableData[params.index].cj,
-                  number
+                  value: this.tableData[params.index].sycj,
+                  number:true
                 },
                 on: {
                   "on-blur": event => {
@@ -82,7 +82,7 @@ export default {
                     if(rsg.test(data)) {
                         let target = []
                         target.push({_id:params.row._id})
-                        target.push({cj: parseInt(data)})
+                        target.push({sycj: parseInt(data)})
                         this.updateList.push(target)
                     } else{
                         this.$Message.warning('该分数格式有误！'); 
@@ -101,11 +101,14 @@ export default {
   created() {
     this.currentFile = pathModule.parse(localStorage.getItem('currentTable')).name
     const _this = this
-    ipcRenderer.once("save-file-response",(event,savePath) => {
-      if (event) {
+    ipcRenderer.on("save-file-response",(event,savePath) => {
+      if (savePath) {
         saveExcelFile(_this, savePath)
       }
     })
+  },
+  mounted(){
+    ipcRenderer.send("resize-window")
   },
   methods: {
     exportFile(){

@@ -1,6 +1,7 @@
 import pathModule from 'path'
 import XLSX from 'xlsx'
 import os from 'os'
+import fs from 'fs'
 import * as Constants from '../constants/Application'
 import pinyin from 'pinyin4js'
 import {
@@ -22,15 +23,18 @@ export function isExcelFile(path) {
  */
 export async function readExcelFile(_this, filePath) {
     let readSuccess = false
-    try {
+    // try {
         const workbook = XLSX.readFile(filePath)
         const sheetName = workbook.SheetNames[0]
         const worksheetData = workbook.Sheets[sheetName]
+        // fs.writeFile('log.log', JSON.stringify(worksheetData),function(err){
+        //     console.log(err)
+        // })
         // 获取表头
         const scope = worksheetData['!ref'].split(':') // A1 F5
         const startColumn = getNumCol(extractLetters(scope[0])) // Excel 是从 1 开始
         const endColumn = getNumCol(extractLetters(scope[1]))
-        const startRow = parseInt(extractNumber(scope[0]))
+        const startRow = parseInt(extractNumber(scope[0])) + 1
         const endRow = parseInt(extractNumber(scope[1]))
         let headerList = []
         for (let i = startColumn, emptyColumn = 0; i <= endColumn; i++) {
@@ -68,7 +72,7 @@ export async function readExcelFile(_this, filePath) {
                         }
                     }
                 }
-                const rowKey = `${getCharCol(startColumn)}${startRow}`
+                const rowKey = `${getCharCol(i)}${row}`
                 if (typeof worksheetData[rowKey] === 'undefined') {
                     worksheetData[rowKey] = {
                         t: 's',
@@ -85,10 +89,10 @@ export async function readExcelFile(_this, filePath) {
         await _this.$db.insertDocument(currentFilePath, tableData).then(function (res) {
             readSuccess = res
         })
-    } catch (error) {
-        console.log(error)
-        readSuccess = false
-    }
+    // } catch (error) {
+    //     console.log(error)
+    //     readSuccess = false
+    // }
     return readSuccess
 }
 export function saveExcelFile(_this, targetPath) {
