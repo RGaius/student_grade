@@ -41,12 +41,8 @@ export default {
   created() {
     ipcRenderer.once("open-file-response", (event, path) => {
       if (isExcelFile(path)) {
-        this.$Spin.show({
-          render: h => {
-            return h("span", {}, "数据加载中，请稍后...");
-          }
-        });
         const result = readExcelFile(this, path);
+        console.log(result)
         this.$Spin.hide();
         if (result) {
           this.$Notice.success({
@@ -59,6 +55,7 @@ export default {
           });
         }
       } else {
+        this.$Spin.hide();        
         this.$Notice.warning({
           title: "文件格式有误"
         });
@@ -73,6 +70,7 @@ export default {
       this.show = true;
     },
     importFile(e) {
+      this.$Spin.show();
       ipcRenderer.send("sync-openFile-dialog");
     },
     openHistoryFile(file){
